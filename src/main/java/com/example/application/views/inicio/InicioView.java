@@ -3,6 +3,7 @@ package com.example.application.views.inicio;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
@@ -17,7 +18,9 @@ import java.util.List;
 public class inicioView extends VerticalLayout {
 
     private final List<Usuario> usuarios = new ArrayList<>();
+    private final List<ReservaUsuario> reservas = new ArrayList<>();
     private final VerticalLayout contenedor = new VerticalLayout();
+    private Usuario usuarioActual = null;
 
     public inicioView() {
         setAlignItems(Alignment.CENTER);
@@ -54,12 +57,10 @@ public class inicioView extends VerticalLayout {
             }
 
             usuarios.add(nuevo);
+            usuarioActual = nuevo;
             Notification.show("Registro exitoso. Bienvenido, " + nuevo.getNombre(), 3000,
                     Notification.Position.TOP_CENTER);
-
-            nombre.clear();
-            correo.clear();
-            contraseña.clear();
+            mostrarFormularioReserva();
         });
 
         FormLayout formulario = new FormLayout(nombre, correo, contraseña, registrar);
@@ -84,10 +85,10 @@ public class inicioView extends VerticalLayout {
 
             for (Usuario u : usuarios) {
                 if (u.credencialesValidas(correoIngresado, contraseñaIngresada)) {
-                    Notification.show(" Bienvenido de nuevo, " + u.getNombre(), 3000,
+                    usuarioActual = u;
+                    Notification.show("Bienvenido de nuevo, " + u.getNombre(), 3000,
                             Notification.Position.TOP_CENTER);
-                    correo.clear();
-                    contraseña.clear();
+                    mostrarFormularioReserva();
                     return;
                 } else if (u.mismoCorreo(correoIngresado)) {
                     Notification.show("Contraseña incorrecta", 3000, Notification.Position.MIDDLE);
@@ -101,5 +102,43 @@ public class inicioView extends VerticalLayout {
         FormLayout formulario = new FormLayout(correo, contraseña, ingresar);
         formulario.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1));
         contenedor.add(new H2("Inicio de Sesión"), formulario);
+    }
+
+    private void mostrarFormularioReserva() {
+        contenedor.removeAll();
+
+        if (usuarioActual == null) {
+            Notification.show("Debes iniciar sesión para reservar libros", 3000, Notification.Position.MIDDLE);
+            return;
+        }
+
+        TextField tituloLibro = new TextField("Título del Libro");
+
+        Button reservar = new Button("Reservar", e -> {
+            if (tituloLibro.isEmpty()) {
+                Notification.show("Ingresa el título del libro", 3000, Notification.Position.MIDDLE);
+                return;
+            }
+
+            ReservaUsuario nuevaReserva = new ReservaUsuario(tituloLibro.getValue(), usuarioActual);
+            reservas.add(nuevaReserva);
+
+            Notification.show("Reserva creada: " + nuevaReserva.getTituloLibro(), 3000,
+                    Notification.Position.TOP_CENTER);
+            tituloLibro.clear();
+            mostrarReservas();
+        });
+
+        FormLayout formulario = new FormLayout(tituloLibro, reservar);
+        formulario.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1));
+        contenedor.add(new H2("Reservar Libro"), formulario);
+    }
+
+    private void mostrarReservas() {
+        contenedor.add(new H2("Tus Reservas"));
+
+        reservas.stream()
+                .filter(r -> r.getUsuario().equals(usuarioActual))
+                .forEach(r -> contenedor.add(new Paragraph(r.resumenReserva())));
     }
 }
