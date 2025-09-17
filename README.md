@@ -1,7 +1,12 @@
 
 # Integrantes
 
-Nombres: Mayra Alejandra Alzate Sanchez
+- Mayra Alejandra Alzate Sanchez
 - Santiago Bohorquez Saldaña
 - Samuel Diaz Vanegas
+
+## Proyecto a implementar:
+
+Reserva de libros.
+
 
