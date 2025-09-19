@@ -14,12 +14,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Route("")
-public class inicioView extends VerticalLayout {
+public class InicioView extends VerticalLayout {
 
     private final List<Usuario> usuarios = new ArrayList<>();
     private final VerticalLayout contenedor = new VerticalLayout();
 
-    public inicioView() {
+    public InicioView() {
         setAlignItems(Alignment.CENTER);
         setSpacing(true);
 
