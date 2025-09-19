@@ -1,4 +1,4 @@
-package com.example.application.views.biblioteca;
+package com.example.application.views.inicio;
 
 public interface Prestable {
     void prestar(String usuario);

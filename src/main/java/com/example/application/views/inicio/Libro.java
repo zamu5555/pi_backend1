@@ -1,4 +1,4 @@
-package com.example.application.views.biblioteca;
+package com.example.application.views.inicio;
 
 public class Libro implements Prestable, Renovable {
     private String titulo;
@@ -15,28 +15,27 @@ public class Libro implements Prestable, Renovable {
         this.diasPrestamo = 0;
     }
 
-    // Métodos de Prestable
     @Override
     public void prestar(String usuario) {
         if (!prestado) {
             this.prestado = true;
             this.usuarioPrestamo = usuario;
-            this.diasPrestamo = 14; // préstamo inicial de 14 días
-            System.out.println("📚 Libro '" + titulo + "' prestado a " + usuario);
+            this.diasPrestamo = 14; 
+            System.out.println("Libro '" + titulo + "' prestado a " + usuario);
         } else {
-            System.out.println("⚠️ El libro '" + titulo + "' ya está prestado.");
+            System.out.println(" El libro '" + titulo + "' ya está prestado.");
         }
     }
 
     @Override
     public void devolver() {
         if (prestado) {
-            System.out.println("✅ El libro '" + titulo + "' ha sido devuelto por " + usuarioPrestamo);
+            System.out.println(" El libro '" + titulo + "' ha sido devuelto por " + usuarioPrestamo);
             this.prestado = false;
             this.usuarioPrestamo = null;
             this.diasPrestamo = 0;
         } else {
-            System.out.println("⚠️ El libro '" + titulo + "' no estaba prestado.");
+            System.out.println(" El libro '" + titulo + "' no estaba prestado.");
         }
     }
 
@@ -45,14 +44,13 @@ public class Libro implements Prestable, Renovable {
         return prestado;
     }
 
-    // Métodos de Renovable
     @Override
     public void renovar() {
         if (puedeRenovarse()) {
-            diasPrestamo += 7; // le damos 7 días más
-            System.out.println("🔄 El préstamo del libro '" + titulo + "' ha sido renovado. Días restantes: " + diasPrestamo);
+            diasPrestamo += 7;
+            System.out.println(" El préstamo del libro '" + titulo + "' ha sido renovado. Días restantes: " + diasPrestamo);
         } else {
-            System.out.println("⚠️ No es posible renovar el libro '" + titulo + "'.");
+            System.out.println(" No es posible renovar el libro '" + titulo + "'.");
         }
     }
 
@@ -66,7 +64,6 @@ public class Libro implements Prestable, Renovable {
         return diasPrestamo;
     }
 
-    // Getters básicos
     public String getTitulo() {
         return titulo;
     }

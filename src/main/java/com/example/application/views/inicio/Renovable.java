@@ -1,4 +1,4 @@
-package com.example.application.views.biblioteca;
+package com.example.application.views.inicio;
 
 public interface Renovable {
     void renovar();
