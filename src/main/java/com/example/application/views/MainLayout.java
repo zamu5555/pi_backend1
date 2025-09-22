@@ -83,3 +83,4 @@ public class MainLayout extends AppLayout {
         return MenuConfiguration.getPageHeader(getContent()).orElse("");
     }
 }
+
