@@ -10,8 +10,10 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,36 +26,49 @@ public class InicioView extends VerticalLayout {
     private final List<Libro> libros = new ArrayList<>(List.of(
             new Libro("Cien años de soledad", "Gabriel García Márquez"),
             new Libro("1984", "George Orwell"),
-            new Libro("El Principito", "Antoine de Saint-Exupéry")
-    ));
+            new Libro("El Principito", "Antoine de Saint-Exupéry")));
 
     private Usuario usuarioActual = null;
 
     private final VerticalLayout seccionAuth = new VerticalLayout();
+    private final VerticalLayout contenedorAcceso = new VerticalLayout();
+    private final VerticalLayout formularioAcceso = new VerticalLayout();
     private final VerticalLayout seccionReserva = new VerticalLayout();
     private final VerticalLayout seccionPrestamo = new VerticalLayout();
+    private final VerticalLayout contenedorReservas = new VerticalLayout();
+    private final VerticalLayout seccionRecomendaciones = new VerticalLayout();
+
+    private final GeminiService gemini = new GeminiService("AIzaSyCUOnNR4IIatK-vHotwvJZF25R9Dq_jgCg");
 
     public InicioView() {
         setAlignItems(Alignment.CENTER);
         setSpacing(true);
 
         add(new H2("Bienvenido a la Biblioteca"));
-        add(seccionAuth, seccionReserva, seccionPrestamo);
+        add(seccionAuth);
 
         mostrarSeccionAuth();
     }
 
     private void mostrarSeccionAuth() {
         seccionAuth.removeAll();
+        contenedorAcceso.removeAll();
+        formularioAcceso.removeAll();
 
-        Button irRegistro = new Button("Registro", e -> mostrarFormularioRegistro());
-        Button irLogin = new Button("Iniciar Sesión", e -> mostrarFormularioLogin());
+        Button btnRegistro = new Button("Registro", e -> mostrarFormularioRegistro());
+        Button btnLogin = new Button("Iniciar Sesión", e -> mostrarFormularioLogin());
 
-        seccionAuth.add(new H2("Acceso"), irRegistro, irLogin);
+        HorizontalLayout botones = new HorizontalLayout(btnRegistro, btnLogin);
+        botones.setSpacing(true);
+
+        contenedorAcceso.add(new H2("Acceso de Usuario"), botones, formularioAcceso);
+        seccionAuth.add(contenedorAcceso);
+
+        mostrarFormularioLogin();
     }
 
     private void mostrarFormularioRegistro() {
-        seccionAuth.removeAll();
+        formularioAcceso.removeAll();
 
         TextField nombre = new TextField("Nombre");
         EmailField correo = new EmailField("Correo");
@@ -78,17 +93,20 @@ public class InicioView extends VerticalLayout {
             usuarios.add(nuevo);
             usuarioActual = nuevo;
             Notification.show("Registro exitoso. Bienvenido, " + nuevo.getNombre());
+
+            add(seccionReserva, seccionPrestamo, seccionRecomendaciones);
             mostrarFormularioReserva();
             mostrarLibrosDisponibles();
+            mostrarSeccionRecomendaciones();
         });
 
         FormLayout formulario = new FormLayout(nombre, correo, contraseña, registrar);
         formulario.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1));
-        seccionAuth.add(new H2("Registro de Usuario"), formulario);
+        formularioAcceso.add(new H2("Registro de Usuario"), formulario);
     }
 
     private void mostrarFormularioLogin() {
-        seccionAuth.removeAll();
+        formularioAcceso.removeAll();
 
         EmailField correo = new EmailField("Correo");
         PasswordField contraseña = new PasswordField("Contraseña");
@@ -106,8 +124,11 @@ public class InicioView extends VerticalLayout {
                 if (u.credencialesValidas(correoIngresado, contraseñaIngresada)) {
                     usuarioActual = u;
                     Notification.show("Bienvenido de nuevo, " + u.getNombre());
+
+                    add(seccionReserva, seccionPrestamo, seccionRecomendaciones);
                     mostrarFormularioReserva();
                     mostrarLibrosDisponibles();
+                    mostrarSeccionRecomendaciones();
                     return;
                 } else if (u.mismoCorreo(correoIngresado)) {
                     Notification.show("Contraseña incorrecta");
@@ -120,7 +141,7 @@ public class InicioView extends VerticalLayout {
 
         FormLayout formulario = new FormLayout(correo, contraseña, ingresar);
         formulario.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1));
-        seccionAuth.add(new H2("Inicio de Sesión"), formulario);
+        formularioAcceso.add(new H2("Inicio de Sesión"), formulario);
     }
 
     private void mostrarFormularioReserva() {
@@ -139,6 +160,15 @@ public class InicioView extends VerticalLayout {
                 return;
             }
 
+            boolean yaReservado = reservas.stream()
+                    .anyMatch(r -> r.getUsuario().equals(usuarioActual) &&
+                            r.getTituloLibro().equalsIgnoreCase(tituloLibro.getValue()));
+
+            if (yaReservado) {
+                Notification.show("Ya has reservado ese libro");
+                return;
+            }
+
             ReservaUsuario nuevaReserva = new ReservaUsuario(tituloLibro.getValue(), usuarioActual);
             reservas.add(nuevaReserva);
 
@@ -149,17 +179,19 @@ public class InicioView extends VerticalLayout {
 
         FormLayout formulario = new FormLayout(tituloLibro, reservar);
         formulario.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1));
-        seccionReserva.add(new H2("Reservar Libro"), formulario);
+        seccionReserva.add(new H2("Reservar Libro"), formulario, contenedorReservas);
 
         mostrarReservas();
     }
 
     private void mostrarReservas() {
-        seccionReserva.add(new H2("Tus Reservas"));
+        contenedorReservas.removeAll();
+
+        contenedorReservas.add(new H2("Tus Reservas"));
 
         reservas.stream()
                 .filter(r -> r.getUsuario().equals(usuarioActual))
-                .forEach(r -> seccionReserva.add(new Paragraph(r.resumenReserva())));
+                .forEach(r -> contenedorReservas.add(new Paragraph(r.resumenReserva())));
     }
 
     private void mostrarLibrosDisponibles() {
@@ -198,5 +230,35 @@ public class InicioView extends VerticalLayout {
             fila.add(info, prestarBtn, devolverBtn, renovarBtn);
             seccionPrestamo.add(fila);
         }
+    }
+
+    private void mostrarSeccionRecomendaciones() {
+        seccionRecomendaciones.removeAll();
+
+        TextField generoInput = new TextField("Género para recomendaciones");
+        Button btnRecomendar = new Button("Obtener recomendaciones");
+        TextArea resultadoArea = new TextArea("Libros recomendados");
+        resultadoArea.setWidthFull();
+        resultadoArea.setHeight("200px");
+
+        btnRecomendar.addClickListener(event -> {
+            String genero = generoInput.getValue().trim();
+            if (genero.isEmpty()) {
+                Notification.show("Ingresa un género");
+                return;
+            }
+
+            try {
+                
+                String recomendaciones = gemini.recomendarLibros(genero);
+                resultadoArea.setValue(recomendaciones.isEmpty() ? "No se encontraron recomendaciones.1" : recomendaciones);
+            } catch (Exception e) { 
+                e.printStackTrace();
+                resultadoArea.setValue("Error al conectar con Gemini");
+            }
+        });
+
+        seccionRecomendaciones.add(new H2("Recomendaciones de Libros con Gemini"),
+                generoInput, btnRecomendar, resultadoArea);
     }
 }
