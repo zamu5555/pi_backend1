@@ -38,7 +38,7 @@ public class InicioView extends VerticalLayout {
     private final VerticalLayout contenedorReservas = new VerticalLayout();
     private final VerticalLayout seccionRecomendaciones = new VerticalLayout();
 
-    private final GeminiService gemini = new GeminiService("AIzaSyCUOnNR4IIatK-vHotwvJZF25R9Dq_jgCg");
+    private final GeminiService gemini = new GeminiService("AIzaSyBMFLm1fx7m_OoaqyTXv8ZktVIO7YwMlzw");
 
     public InicioView() {
         setAlignItems(Alignment.CENTER);
