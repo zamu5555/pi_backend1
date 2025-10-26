@@ -41,10 +41,10 @@
         </repository>
     </repositories>
 
-    <!-- BOM para Vaadin y Google Cloud -->
+   
     <dependencyManagement>
         <dependencies>
-            <!-- Vaadin BOM -->
+            
             <dependency>
                 <groupId>com.vaadin</groupId>
                 <artifactId>vaadin-bom</artifactId>
@@ -53,7 +53,7 @@
                 <scope>import</scope>
             </dependency>
 
-            <!-- Google Cloud BOM -->
+           
             <dependency>
                 <groupId>com.google.cloud</groupId>
                 <artifactId>libraries-bom</artifactId>
@@ -65,7 +65,7 @@
     </dependencyManagement>
 
     <dependencies>
-        <!-- Vaadin -->
+       
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin</artifactId>
@@ -75,7 +75,7 @@
             <artifactId>vaadin-spring-boot-starter</artifactId>
         </dependency>
 
-        <!-- Base de datos y Spring -->
+       
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
@@ -90,7 +90,7 @@
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
-        <!-- Desarrollo y testing -->
+       
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
@@ -107,7 +107,7 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Lombok -->
+       
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

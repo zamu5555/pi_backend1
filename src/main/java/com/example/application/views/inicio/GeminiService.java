@@ -28,7 +28,7 @@ public class GeminiService {
             String prompt = "Recomienda una lista de 5 libros populares del género '" + genero + "'. " +
                     "Devuelve solo la lista numerada del 1 al 5 con título y autor.";
 
-            // Crear el JSON correcto según la API de Gemini
+          
             ObjectNode requestJson = mapper.createObjectNode();
             ArrayNode contentsArray = mapper.createArrayNode();
             ObjectNode contentObject = mapper.createObjectNode();
@@ -51,7 +51,7 @@ public class GeminiService {
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            // Verificar si la respuesta fue exitosa
+    
             if (response.statusCode() != 200) {
                 System.err.println("Error HTTP: " + response.statusCode());
                 System.err.println("Respuesta: " + response.body());
@@ -59,8 +59,7 @@ public class GeminiService {
             }
 
             JsonNode jsonNode = mapper.readTree(response.body());
-            
-            // Ruta correcta para obtener el texto de la respuesta
+      
             JsonNode textNode = jsonNode.at("/candidates/0/content/parts/0/text");
             
             if (textNode.isMissingNode() || textNode.asText().isEmpty()) {
