@@ -14,7 +14,6 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,8 +40,34 @@ public class InicioView extends VerticalLayout {
     private final GeminiService gemini = new GeminiService("AIzaSyBMFLm1fx7m_OoaqyTXv8ZktVIO7YwMlzw");
 
     public InicioView() {
+
+        getStyle()
+                .set("background", "linear-gradient(to bottom, #e8f4f8, #ffffff)")
+                .set("min-height", "100vh")
+                .set("padding", "20px");
+
         setAlignItems(Alignment.CENTER);
         setSpacing(true);
+        setWidthFull();
+
+        // Configurar todas las secciones con el mismo ancho
+        seccionAuth.setWidth("50%");
+        seccionAuth.setAlignItems(Alignment.CENTER);
+        
+        seccionReserva.setWidth("50%");
+        seccionReserva.setAlignItems(Alignment.CENTER);
+        
+        seccionPrestamo.setWidth("50%");
+        seccionPrestamo.setAlignItems(Alignment.CENTER);
+        
+        contenedorReservas.setWidth("100%");
+        contenedorReservas.setAlignItems(Alignment.CENTER);
+        
+        seccionRecomendaciones.setWidth("50%");
+        seccionRecomendaciones.setAlignItems(Alignment.CENTER);
+        
+        formularioAcceso.setWidth("100%");
+        formularioAcceso.setAlignItems(Alignment.CENTER);
 
         add(new H2("Bienvenido a la Biblioteca"));
         add(seccionAuth);
@@ -52,27 +77,36 @@ public class InicioView extends VerticalLayout {
 
     private void mostrarSeccionAuth() {
         seccionAuth.removeAll();
-        contenedorAcceso.removeAll();
-        formularioAcceso.removeAll();
+    contenedorAcceso.removeAll();
+    formularioAcceso.removeAll();
 
-        Button btnRegistro = new Button("Registro", e -> mostrarFormularioRegistro());
-        Button btnLogin = new Button("Iniciar Sesión", e -> mostrarFormularioLogin());
+    Button btnRegistro = new Button("Registro", e -> mostrarFormularioRegistro());
+    Button btnLogin = new Button("Iniciar Sesión", e -> mostrarFormularioLogin());
 
-        HorizontalLayout botones = new HorizontalLayout(btnRegistro, btnLogin);
-        botones.setSpacing(true);
+    HorizontalLayout botones = new HorizontalLayout(btnRegistro, btnLogin);
+    botones.setSpacing(true);
 
-        contenedorAcceso.add(new H2("Acceso de Usuario"), botones, formularioAcceso);
-        seccionAuth.add(contenedorAcceso);
+    // Configurar el contenedor de acceso para centrar su contenido
+    contenedorAcceso.setWidth("100%");
+    contenedorAcceso.setAlignItems(Alignment.CENTER);
+    
+    contenedorAcceso.add(new H2("Acceso de Usuario"), botones, formularioAcceso);
+    seccionAuth.add(contenedorAcceso);
 
-        mostrarFormularioLogin();
+    mostrarFormularioLogin();
     }
 
     private void mostrarFormularioRegistro() {
         formularioAcceso.removeAll();
 
         TextField nombre = new TextField("Nombre");
+        nombre.setWidthFull();
+        
         EmailField correo = new EmailField("Correo");
+        correo.setWidthFull();
+        
         PasswordField contraseña = new PasswordField("Contraseña");
+        contraseña.setWidthFull();
 
         Button registrar = new Button("Registrar", e -> {
             Usuario nuevo = new Usuario(nombre.getValue(), correo.getValue(), contraseña.getValue());
@@ -102,6 +136,8 @@ public class InicioView extends VerticalLayout {
 
         FormLayout formulario = new FormLayout(nombre, correo, contraseña, registrar);
         formulario.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1));
+        formulario.setWidthFull();
+        
         formularioAcceso.add(new H2("Registro de Usuario"), formulario);
     }
 
@@ -109,7 +145,10 @@ public class InicioView extends VerticalLayout {
         formularioAcceso.removeAll();
 
         EmailField correo = new EmailField("Correo");
+        correo.setWidthFull();
+        
         PasswordField contraseña = new PasswordField("Contraseña");
+        contraseña.setWidthFull();
 
         Button ingresar = new Button("Ingresar", e -> {
             String correoIngresado = correo.getValue();
@@ -141,6 +180,8 @@ public class InicioView extends VerticalLayout {
 
         FormLayout formulario = new FormLayout(correo, contraseña, ingresar);
         formulario.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1));
+        formulario.setWidthFull();
+        
         formularioAcceso.add(new H2("Inicio de Sesión"), formulario);
     }
 
@@ -153,6 +194,7 @@ public class InicioView extends VerticalLayout {
         }
 
         TextField tituloLibro = new TextField("Título del Libro");
+        tituloLibro.setWidthFull();
 
         Button reservar = new Button("Reservar", e -> {
             if (tituloLibro.isEmpty()) {
@@ -179,6 +221,8 @@ public class InicioView extends VerticalLayout {
 
         FormLayout formulario = new FormLayout(tituloLibro, reservar);
         formulario.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1));
+        formulario.setWidthFull();
+        
         seccionReserva.add(new H2("Reservar Libro"), formulario, contenedorReservas);
 
         mostrarReservas();
@@ -236,7 +280,10 @@ public class InicioView extends VerticalLayout {
         seccionRecomendaciones.removeAll();
 
         TextField generoInput = new TextField("Género para recomendaciones");
+        generoInput.setWidthFull();
+        
         Button btnRecomendar = new Button("Obtener recomendaciones");
+        
         TextArea resultadoArea = new TextArea("Libros recomendados");
         resultadoArea.setWidthFull();
         resultadoArea.setHeight("200px");
@@ -249,10 +296,10 @@ public class InicioView extends VerticalLayout {
             }
 
             try {
-                
                 String recomendaciones = gemini.recomendarLibros(genero);
-                resultadoArea.setValue(recomendaciones.isEmpty() ? "No se encontraron recomendaciones.1" : recomendaciones);
-            } catch (Exception e) { 
+                resultadoArea
+                        .setValue(recomendaciones.isEmpty() ? "No se encontraron recomendaciones.1" : recomendaciones);
+            } catch (Exception e) {
                 e.printStackTrace();
                 resultadoArea.setValue("Error al conectar con Gemini");
             }
