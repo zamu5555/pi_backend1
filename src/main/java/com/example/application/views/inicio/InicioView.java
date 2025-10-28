@@ -50,7 +50,7 @@ public class InicioView extends VerticalLayout {
         setSpacing(true);
         setWidthFull();
 
-        // Configurar todas las secciones con el mismo ancho
+      
         seccionAuth.setWidth("50%");
         seccionAuth.setAlignItems(Alignment.CENTER);
         
@@ -86,7 +86,7 @@ public class InicioView extends VerticalLayout {
     HorizontalLayout botones = new HorizontalLayout(btnRegistro, btnLogin);
     botones.setSpacing(true);
 
-    // Configurar el contenedor de acceso para centrar su contenido
+    
     contenedorAcceso.setWidth("100%");
     contenedorAcceso.setAlignItems(Alignment.CENTER);
     
